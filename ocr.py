@@ -14,6 +14,16 @@ TESSDATA_PREFIX = full_path_tessdata
 pytesseract.pytesseract.tesseract_cmd = full_path_tesseract
 
 
+def ocr_image(image):
+    image = image.convert('1', dither=Image.NONE)
+    print('Reading image')
+    options = f"-l 'ukr' --psm {args['PSM']}"
+    print("OCR'ing")
+    text = pytesseract.image_to_string(image, config=options)
+    paragraph = mydoc.add_paragraph(text)
+    paragraph.alignment = 0  # 0-left, 1-center, 2-right
+
+
 @Gooey(advanced=True,
        default_size=(400, 500),
        required_cols=1,
@@ -21,6 +31,9 @@ pytesseract.pytesseract.tesseract_cmd = full_path_tesseract
        program_name='OCR',
        program_description='OCR app made by Volyn3ts')
 def start_interface():
+    global args
+    global mydoc
+    
     ap = GooeyParser()
     ap.add_argument('Image', help="image to process", widget='FileChooser')
     ap.add_argument("-p", "--PSM", type=int, default=3,
@@ -33,22 +46,11 @@ def start_interface():
         for i in range(len(images)):
             images[i].save('page' + str(i) + '.jpg', 'JPEG')
             image = Image.open(rf'page{i}.jpg')
-            image = image.convert('1', dither=Image.NONE)
-            print('Reading image')
-            options = f"-l 'ukr' --psm {args['PSM']}"
-            print("OCR'ing")
-            text = pytesseract.image_to_string(image, config=options)
-            paragraph = mydoc.add_paragraph(text)
-            paragraph.alignment = 0  # 0-left, 1-center, 2-right
+            ocr_image(image)
     else:
         image = Image.open(args["Image"])
-        image = image.convert('1', dither=Image.NONE)
-        print('Reading image')
-        options = f"-l 'ukr' --psm {args['PSM']}"
-        print("OCR'ing")
-        text = pytesseract.image_to_string(image, config=options)
-        paragraph = mydoc.add_paragraph(text)
-        paragraph.alignment = 0  # 0-left, 1-center, 2-right
+        ocr_image(image)
+        
     mydoc.save(os.path.join(path, fr'{ntpath.basename(args["Image"])}.docx'))
     print("Finished, result in 'result.txt'")
     os.startfile(os.path.join(path, fr'{ntpath.basename(args["Image"])}.docx'))
