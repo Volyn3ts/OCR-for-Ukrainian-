@@ -5,3 +5,6 @@ How to change language:
 1. Find and download needed language from here: https://github.com/tesseract-ocr/tessdata
 2. Place it in the TESSERACT/tessdata
 3. In line 38 of this script change "ukr" to the language of your choice. Done!
+
+This is what the interface looks like:
+![OCR 11_23_2023 6_13_50 PM](https://github.com/Volyn3ts/OCR-for-Ukrainian-/assets/101065356/bb362a63-7017-4a97-95df-89f339da68fc)
